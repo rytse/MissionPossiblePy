@@ -1,0 +1,3 @@
+[submodule "motor-shield"]
+	path = motor-shield
+	url = git@github.com:sbcshop/motor-shield.git
