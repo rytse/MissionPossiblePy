@@ -1,8 +1,8 @@
 import util;
 import mp_io as mio;
-import motor-shield.PiMotor as pim
+import motor-shield.PiMotor as pim;
 
-def main:
+def main():
     left_m = pim.Motor("MOTOR1", 1);
     right_m = pim.Motor("MOTOR2", 1);
     arm_m = pim.Motor("MOTOR3", 1);
@@ -11,8 +11,8 @@ def main:
     while True:
         in_data = mio.readfile();
 
-        util_setmotor(left_m, in_data["left_m"];
-        util_setmotor(right_m, in_data["right_m"];
+        util.setmotor(left_m, in_data["left_m"]);
+        util.setmotor(right_m, in_data["right_m"]);
 
 if __name__ == "__main__":
     main()
