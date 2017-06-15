@@ -2,7 +2,6 @@ import util;
 import mp_io as mio;
 import spi_bitbang as mcp3008;
 import gaugette.rotary_encoder as encoder
-#import gaugette.gpio
 import motorshield.PiMotor as pim;
 import spi_bitbang
 import RPi.GPIO as GPIO
@@ -36,47 +35,45 @@ def main():
     prevTempVolts = 0.;
 
     while True:
-	if num == 30:
-  	    c = 0;
-  	    num = 0;
+        if num == 30:
+            c = 0;
+            num = 0;
         in_data = mio.readfile();
 
-#        util.setmotor(left_m, in_data["left_m"]);
-#        util.setmotor(right_m, in_data["right_m"]);
+        util.setmotor(left_m, in_data["left_m"]);
+        util.setmotor(right_m, in_data["right_m"]);
 
-	num += 1
+        if data["arm_up_s"]:
+            util.setmotor(arm_m, -50.)
+        else if data["arm_down_s"]:
+            util.setmotor(arm_m, 50.)
+
+        num += 1
+
+        anamometer_e.update();
+        if len(wind_a) > 30:
+            wind_a.pop(0)
+            wind_a.append(anamometer_e.get_steps());
 
         if in_data["read_data"]:
-	    anamometer_e.update();
-	    if len(wind_a) > 30:
-	        wind_a.pop(0)
-	    wind_a.append(anamometer_e.get_steps());
+            s = sum(wind_a);
+            print "Wind: "+str(s)
+            if s <= 10:
+                print "Wind speed: 0"
+            elif s <= 15:
+                print "Wind speed: 1"
+            elif s <= 20:
+                print "Wind speed: 2"
+            else:
+                print "Wind speed: 3"
 
-            #print "Temperature (volts): "+str(mcp3008.readAdc(TEMP_SENSOR, CLK, MISO, MOSI, CS))
-	    #tempVolts =  spi_bitbang.readAdcChannel(0);
-	    print str(float(spi_bitbang.readAdcChannel(0)));
+#print "Temperature (volts): "+str(mcp3008.readAdc(TEMP_SENSOR, CLK, MISO, MOSI, CS))
+#tempVolts =  spi_bitbang.readAdcChannel(0);
 
-	    #if (tempVolts != 0):
-	    #    prevTempVolts = tempVolts;
+#if (tempVolts != 0):
+#    prevTempVolts = tempVolts;
 
-            #print "Temperature (volts): " + str(tempVolts);
-
-	    s = sum(wind_a);
-	    print "Wind: "+str(s)
-
-	    if s <= 10:
-		print "Wind speed: 0"
-	    elif s <= 15:
-	        print "Wind speed: 1"
-	    elif s <= 20:
-	        print "Wind speed: 2"
-	    else:
-	        print "Wind speed: 3"
-
-        #if in_data["arm_up_s"]:
-            #util.setmotor(arm_m, -50)
-        #elif in_data["arm_down_s"]:
-            #util.setmotor(arm_m, 50)
+#print "Temperature (volts): " + str(tempVolts);
 
 if __name__ == "__main__":
     GPIO.setmode(GPIO.BOARD)

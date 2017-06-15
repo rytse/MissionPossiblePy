@@ -4,6 +4,6 @@ def setmotor(motor, pvbus):
 	if pvbus > 0:
 		motor.forward(pvbus)
 	elif pvbus < 0:
-		motor.reverse(pvbus)
+		motor.reverse(abs(pvbus))
 	else:
 		motor.stop()
