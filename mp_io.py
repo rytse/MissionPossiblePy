@@ -15,6 +15,7 @@ def readfile(filename = "exchange.txt"):
     data["turret_s"] = bool(fi.readline());
     data["arm_up_s"] = bool(fi.readline());
     data["arm_down_s"] = bool(fi.readline());
+    data["read_data"] = bool(fi.readline());
     data["stop"] = bool(fi.readline());
     fi.close();
     return data;

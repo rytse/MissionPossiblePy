@@ -1,10 +1,8 @@
 #!/usr/bin/env python
-#
-# Bitbang'd SPI interface with an MCP3008 ADC device
+# # Bitbang'd SPI interface with an MCP3008 ADC device
 # MCP3008 is 8-channel 10-bit analog to digital converter
 #  Connections are:
-#	 CLK => 18  
-#	 DOUT => 23 (chip's data out, RPi's MISO)
+#	 CLK => 18   #	 DOUT => 23 (chip's data out, RPi's MISO)
 #	 DIN => 24  (chip's data in, RPi's MOSI)
 #	 CS => 25 
 
@@ -104,16 +102,37 @@ def recvBits(numBits, clkPin, misoPin):
 def convertVolts(tenBit):
 	return tenBit / 1023. * 5.
 
+def readAdcChannel(channel):
+	return convertVolts(readAdc(channel, CLK, MISO, MOSI, CS));
 
 if __name__ == '__main__':
 	try:
 		GPIO.setmode(GPIO.BOARD)
 		setupSpiPins(CLK, MISO, MOSI, CS)
 
+		p = 0;
+
+		ema_tmp = 0;
+		ema_light = 0;
+
+		alpha = .55 
+
 		while True:
 			val = readAdc(0, CLK, MISO, MOSI, CS)
-			print "ADC Result: ", str(convertVolts(val))
-			time.sleep(5)
+			#print "ADC Result: ", str(convertVolts(val))
+			#print "ADC Result: ", str(val)
+
+			n_tmp = readAdcChannel(0);
+			if n_tmp != 0.:
+				ema_tmp = alpha * n_tmp + (1 - alpha) * ema_tmp;
+				print("EMA Temp: " + str(ema_tmp));
+
+			n_light = readAdcChannel(2);
+			if n_light != 0.:
+				ema_light = alpha * n_light + (1 - alpha) * ema_light;
+				print("EMA Light: " + str(ema_light));
+
+			#time.sleep(5)
 	except KeyboardInterrupt:
 		GPIO.cleanup()
 		sys.exit(0)
